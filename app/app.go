@@ -1,7 +1,6 @@
 package app
 
 import (
-	"flag"
 	"fmt"
 	"log"
 	"net/http"
@@ -21,6 +20,7 @@ type App struct {
 
 // Initialize initializes the app with predefined configuration
 func (a *App) Initialize(config *config.Config) {
+
 	dbURI := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=%s",
 		config.DB.Username,
 		config.DB.Password,
@@ -57,16 +57,18 @@ func (a *App) setRouters() {
 	a.Post("/projects/{title}/tasks", a.handleRequest(handler.CreateTask))
 	a.Get("/projects/{title}/tasks/{id:[0-9]+}", a.handleRequest(handler.GetTask))
 	a.Put("/projects/{title}/tasks/{id:[0-9]+}", a.handleRequest(handler.UpdateTask))
-	a.Delete("/projects/{title}/tasks/{id:[0-9]+}", a.handleRequest(handler.DeleteTask))
+	a.Delete("/projects/{title}/tasks/{id:[0-9]+}", a.handleRequest(	handler.DeleteTask))
 	a.Put("/projects/{title}/tasks/{id:[0-9]+}/complete", a.handleRequest(handler.CompleteTask))
 	a.Delete("/projects/{title}/tasks/{id:[0-9]+}/complete", a.handleRequest(handler.UndoTask))
+	/*
+		var dir string
 
-	var dir string
+		flag.StringVar(&dir, "dir", ".", "the directory to serve files from. Defaults to the current dir")
+		flag.Parse()
 
-	flag.StringVar(&dir, "dir", ".", "the directory to serve files from. Defaults to the current dir")
-	flag.Parse()
-
-	a.Router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir(dir))))
+		a.Router.PathPrefix("/path/").Handler(http.StripPrefix("/path/", http.FileServer(http.Dir(dir))))
+	*/
+	a.Router.PathPrefix("/").Handler(http.FileServer(http.Dir("./static/")))
 }
 
 // Get wraps the router for GET method
