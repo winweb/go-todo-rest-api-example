@@ -1,5 +1,7 @@
 package config
 
+import "fmt"
+
 type Config struct {
 	DB *DBConfig
 }
@@ -18,11 +20,11 @@ func GetConfig() *Config {
 	return &Config{
 		DB: &DBConfig{
 			Dialect:  "mysql",
-			Host:     "127.0.0.1",
+			Host:     "localhost",
 			Port:     3306,
-			Username: "guest",
-			Password: "Guest0000!",
-			Name:     "todoapp",
+			Username: "eforl",
+			Password: "password",
+			Name:     "go_todo",
 			Charset:  "utf8",
 		},
 	}

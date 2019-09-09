@@ -1,6 +1,7 @@
 package app
 
 import (
+	"flag"
 	"fmt"
 	"log"
 	"net/http"
@@ -20,13 +21,15 @@ type App struct {
 
 // Initialize initializes the app with predefined configuration
 func (a *App) Initialize(config *config.Config) {
-	dbURI := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=%s&parseTime=True",
+	dbURI := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=%s",
 		config.DB.Username,
 		config.DB.Password,
 		config.DB.Host,
 		config.DB.Port,
 		config.DB.Name,
 		config.DB.Charset)
+
+	fmt.Println(dbURI)
 
 	db, err := gorm.Open(config.DB.Dialect, dbURI)
 	if err != nil {
@@ -57,6 +60,13 @@ func (a *App) setRouters() {
 	a.Delete("/projects/{title}/tasks/{id:[0-9]+}", a.handleRequest(handler.DeleteTask))
 	a.Put("/projects/{title}/tasks/{id:[0-9]+}/complete", a.handleRequest(handler.CompleteTask))
 	a.Delete("/projects/{title}/tasks/{id:[0-9]+}/complete", a.handleRequest(handler.UndoTask))
+
+	var dir string
+
+	flag.StringVar(&dir, "dir", ".", "the directory to serve files from. Defaults to the current dir")
+	flag.Parse()
+
+	a.Router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir(dir))))
 }
 
 // Get wraps the router for GET method
